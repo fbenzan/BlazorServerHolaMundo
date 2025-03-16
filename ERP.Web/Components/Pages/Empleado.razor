@@ -1,0 +1,141 @@
+﻿@page "/Empleado"
+@rendermode InteractiveServer
+@inject IEmpleadoService EmpleadoService
+<h3>
+    Empleados
+    <span @onclick="Agregar" class="btn btn-outline-success">+</span>
+</h3>
+@if (ShowForm)
+{
+
+    <div class="card">
+        <div class="card-header">@TituloEmpleado</div>
+        <div class="card-body">
+            <div class="mt-1 form-group">
+                <label class="form-label">Nombre</label>
+                <input class="form-control" type="text" @bind="Request.DatosPersonales.Nombre" />
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="mt-1 form-group">
+                        <label class="form-label">Fecha de Nacimiento</label>
+                        <input class="form-control" type="date" @bind="Request.DatosPersonales.FechaDeNacimiento" />
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="mt-1 form-group">
+                        <label class="form-label">Sueldo</label>
+                        <input class="form-control" type="number" @bind="Request.Sueldo" />
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="mt-1 form-group">
+                        <label class="form-label">Puesto</label>
+                        <input class="form-control" type="text" @bind="Request.Puesto" />
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="mt-1 form-group">
+                        <label class="form-label">bono</label>
+                        <input class="form-control" type="text" @bind="Request.Bono" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="card-footer">
+            <span @onclick="Add" class="btn btn-success">Aceptar</span>
+            <span @onclick="Clear" class="btn btn-danger">Cancelar</span>
+        </div>
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>...</th>
+                <th>Código</th>
+                <th>Empleado</th>
+                <th>Fecha de Nacimiento</th>
+                <th>Sueldo</th>
+                <th>Puesto</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Listado)
+            {
+                <tr>
+                    <th>
+                        <div class="btn-group">
+                            <span @onclick="()=>Modificar(item.Id)" class="btn btn-warning">Modificar</span>
+                            <span @onclick="()=>Eliminar(item.Id)" class="btn btn-danger">Eliminar</span>
+                        </div>
+                    </th>
+                    <th>@item.Id</th>
+                    <th>@item.DatosPersonales.Nombre</th>
+                    <th>@(item.DatosPersonales.FechaDeNacimiento?.ToString("dd/MM/yyyy") ?? "N/A")</th>
+                    <th>@item.Sueldo.ToString("N2")</th>
+                    <th>@item.Puesto</th>
+                    <th>@item.Bono</th>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    public string TituloEmpleado { get; set; } = "";
+    public EmpleadoDto Request { get; set; } = new();
+    public List<EmpleadoDto> Listado { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Consultar();
+    }
+    private async Task Consultar()
+    {
+        Listado = await EmpleadoService.Consultar("");
+    }
+
+    public bool ShowForm { get; set; } = false;
+    private void Toggle() => ShowForm = !ShowForm;
+    private void Clear()
+    {
+        Request = new();
+        Toggle();
+    }
+    private void Agregar()
+    {
+        Clear();
+        TituloEmpleado = "Registrar";
+    }
+    private async Task Add()
+    {
+        var result = Request.Id == 0 ?
+            await EmpleadoService.Crear(Request) :
+            await EmpleadoService.Modificar(Request);
+        if (result)
+        {
+            await Consultar();
+            Clear();
+        }
+    }
+    private void Modificar(int Id)
+    {
+        Clear();
+        TituloEmpleado = "Modificar";
+        Request = Listado
+        .Where(c => c.Id == Id)
+        .FirstOrDefault() ?? new();
+    }
+    private async Task Eliminar(int Id)
+    {
+        var result = await EmpleadoService.Eliminar(Id);
+        if (result)
+        {
+            await Consultar();
+        }
+    }
+}

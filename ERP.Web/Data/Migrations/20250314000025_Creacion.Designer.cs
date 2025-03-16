@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP.Web.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250304234024_PrimeraMigracion")]
-    partial class PrimeraMigracion
+    [Migration("20250314000025_Creacion")]
+    partial class Creacion
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,6 +56,10 @@ namespace ERP.Web.Data.Migrations
 
                     b.Property<int>("PersonaId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Puesto")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Sueldo")
                         .HasColumnType("decimal(18, 2)");

@@ -1,4 +1,5 @@
 ﻿using ERP.Web.Domain.Entities;
+using ERP.Web.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace ERP.Web.Data;

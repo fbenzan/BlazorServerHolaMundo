@@ -10,9 +10,18 @@ builder.Services.AddRazorComponents()
 //Data Services
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection1")));
+
 //Agregar el servico para la gestion de los clientes
 builder.Services.AddScoped<IClienteService, ClienteService>();
+
+builder.Services.AddScoped<IEmpleadoService, EmpleadoService>();
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
